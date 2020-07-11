@@ -1,0 +1,7 @@
+# PyCharm project settings
+.idea
+
+# Data files we don't want to version
+*.csv
+*.tsv
+*.vcd
