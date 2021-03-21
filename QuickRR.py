@@ -4,13 +4,15 @@
 # 
 
 input_file = open("input_responses.csv")
+
+headerData = dict()
 ruleData = dict()
 criterionData = dict()
 
 lineNumber = 0
 
 # Script Information
-Mode = "Response"
+Mode = "Header"
 DividerNumber = 0
 
 # Columns
@@ -80,18 +82,22 @@ for line in input_file:
     # 2. Rows with blank line text AND blank entries are considered to be non-responses
     if IsHeader or (parts[Column_LineText] == "" and parts[Column_Entry] == ""):
     
-        # Instead, assume irrelevant rows are appropriate break points
-        Divider = "//========================="
-        if not IsHeader and parts[Column_Response].strip() != "":
-            Divider += " " + parts[Column_Response] + " "
-        Divider += "=========================\n\n"
-        
-        if Mode == "Response":
-            ruleData["divider_" + str(DividerNumber)] = Divider
-        elif Mode == "Criterion":
-            criterionData["divider_" + str(DividerNumber)] = Divider
-        
-        DividerNumber += 1
+        if parts[Column_Response].strip() != "":
+            # Assume irrelevant rows with the Response column are appropriate break points
+            Divider = "//========================="
+            if not IsHeader:
+                Divider += " " + parts[Column_Response] + " "
+            Divider += "=========================\n\n"
+            
+            if Mode == "Header":
+                headerData["divider_" + str(DividerNumber)] = Divider
+            elif Mode == "Response":
+                ruleData["divider_" + str(DividerNumber)] = Divider
+            elif Mode == "Criterion":
+                criterionData["divider_" + str(DividerNumber)] = Divider
+            
+            DividerNumber += 1
+            
         continue
     
     lineNumber = lineNumber + 1
@@ -160,6 +166,15 @@ responses_file = open("output_responses.txt", "w")
 responses_file.write("//=============================================\n")
 responses_file.write("// AUTO-GENERATED RESPONSES\n")
 responses_file.write("//=============================================\n\n")
+
+# 
+# HEADER DIVIDERS
+# 
+for Header_Name in headerData.keys():
+    # If it's a divider, divide
+    if "divider_" in Header_Name:
+        responses_file.write(headerData.get(Header_Name))
+        continue
 
 # 
 # CRITERIA DECLARATIONS
