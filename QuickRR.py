@@ -18,6 +18,7 @@ Column_Criteria = 5
 Column_Entry = 6
 Column_ResponseParams = 7
 Column_RuleParams = 8
+Column_GroupParams = 9
 
 # Actor Criteria
 ActorCriteria = dict()
@@ -35,6 +36,7 @@ Line_Actor = ""
 Line_Concept = ""
 Line_Criteria = ""
 Line_RuleParams = ""
+Line_GroupParams = ""
 
 for line in input_file:
     parts = line.split('^')
@@ -52,13 +54,14 @@ for line in input_file:
     lineNumber = lineNumber + 1
         
     # If this is a new response (i.e. not one carried over from a previous row), refresh our values
-	# (Retaining this data between similar rows is important for merged cells!!!)
+    # (Retaining this data between similar rows is important for merged cells!!!)
     if parts[Column_Response] != "":
         Line_Response = parts[Column_Response]
         Line_Actor = parts[Column_Actor]
         Line_Concept = parts[Column_Concept]
         Line_Criteria = parts[Column_Criteria]
         Line_RuleParams = parts[Column_RuleParams]
+        Line_GroupParams = parts[Column_GroupParams]
         
     Line_LineText = parts[Column_LineText]
     Line_LineNotes = parts[Column_LineNotes]
@@ -79,7 +82,7 @@ for line in input_file:
     # Append rule params if it doesn't have any
     ruleParams = rule.get("_ruleparams")
     if ruleParams is None:
-        ruleParams = Line_RuleParams
+        ruleParams = [Line_RuleParams, Line_GroupParams]
         
     # Check for this particular response entry
     response = rule.get(lineNumber)
@@ -132,18 +135,11 @@ for Rule_Name in data.keys():
     ruleParams = rule.get("_ruleparams")
     if ruleParams is not None:
     
-        # HACKHACK: Extract response group params and replace inconsistent spacing
-        if "norepeat" in ruleParams:
-            ruleParams = ruleParams.replace('norepeat','')
-            Text_ResponseGroupParams += "\tnorepeat\n"
-        if "sequential" in ruleParams:
-            ruleParams = ruleParams.replace('sequential','')
-            Text_ResponseGroupParams += "\tsequential\n"
-        if "permitrepeats" in ruleParams:
-            ruleParams = ruleParams.replace('permitrepeats','')
-            Text_ResponseGroupParams += "\tpermitrepeats\n"
-    
-        Text_RuleParams += ruleParams.strip().replace('  ','')
+        Text_RuleParams += ruleParams[0]
+        
+        groupParams = ruleParams[1].split()
+        for param in groupParams:
+            Text_ResponseGroupParams += "\t" + param + "\n"
         
         # Don't need rule params anymore; remove before iterating
         del rule["_ruleparams"]
