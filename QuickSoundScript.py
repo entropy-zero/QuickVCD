@@ -5,7 +5,7 @@ data = dict()
 
 lineNumber = 0
 locationColumn = 0
-vcdColumn = 0 # Need to separate this out for all line sheets!
+vcdColumn = 3 # Need to separate this out for all line sheets!
 wavPathColumn = 1
 soundscriptColumn = 2
 actorColumn = 4
@@ -13,13 +13,10 @@ lineTextColumn = 5
 
 # This is mega lame, but let's just hard code caption colors for now
 closeCaptionColors = dict()
-closeCaptionColors["Clone Cop"] = "<clr:253,165,2><I>"
-closeCaptionColors["Bad Cop"] = "<clr:255,51,0>"
-closeCaptionColors["Advisor"] = "<clr:136,180,185>"
-closeCaptionColors["Will-E"] = "<clr:66,255,199>"
-closeCaptionColors["Cop 1"] = "<clr:0,255,255>"
-closeCaptionColors["Cop 2"] = "<clr:255,255,0>"
-closeCaptionColors["Cop 3"] = "<clr:0,0,255>"
+closeCaptionColors["Clone Cop"] = "253,165,2"
+closeCaptionColors["Bad Cop"] = "255,51,0"
+closeCaptionColors["Advisor"] = "136,180,185"
+closeCaptionColors["Will-E"] = "66,255,199"
 
 for line in input_file:
     parts = line.split('^')
@@ -63,7 +60,7 @@ for scene_name in data.keys():
             wavPath = line[3]
             captionColor = closeCaptionColors.get(actor_name)
             if captionColor is None:
-                captionColor = "<clr:255,255,255>"
+                captionColor = "255,255,255"
             soundscript_file.write("\"" + soundscriptName + "\"\n")
             soundscript_file.write("{\n")
             soundscript_file.write("  \"channel\"\t\t\"CHAN_VOICE\"\n")
@@ -72,7 +69,7 @@ for scene_name in data.keys():
             soundscript_file.write("  \"soundlevel\"\t\t\"SNDLVL_TALKING\"\n")
             soundscript_file.write("  \"wave\"\t\t\"" + wavPath + "\"\n")
             soundscript_file.write("}\n")
-            captions_file.write("  \"" + soundscriptName + "\"  \"" + captionColor + line_text + "\"\n")
+            captions_file.write("  \"" + soundscriptName + "\"  \"<clr:" + captionColor + ">" + line_text + "\"\n")
 
 soundscript_file.close()
 captions_file.close()
